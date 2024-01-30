@@ -1,0 +1,54 @@
+
+{% load static %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>CSV Display</title>
+</head>
+<body>
+    <div class="content-wrapper">
+        <h1>Import CSV</h1>
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+
+        <form action="{% url 'create_serie_quiz' %}" method="post"enctype="multipart/form-data">
+             {% csrf_token %}
+            {% for i in "1234" %}
+            <!-- Dropdown menu {{ i }} -->
+            {% if i == "1" %}
+                <label>Question :</label>
+            {% elif i == "2" %}
+                <label>Les propositions de réponse :</label>
+            {% elif i == "3" %}
+               <label>Réponse correcte :</label>
+            {% else %}
+               <label>Explication :</label>
+            {% endif %}
+
+            <select name="dropdown{{ i }}" id="dropdown{{ i }}">
+                {% for row in csv_rows %}
+                    {% if forloop.first %}
+                        {% for cell in row %}
+                            <option value="{{ cell }}">{{ cell }}</option>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                <option value="Allother">Allother</option>
+                <option value="None">None</option>
+            </select>
+            {% endfor %}
+            <input type="submit" value="Valide">
+        </form>
+        </div>
+    <table>
+        {% for row in csv_rows %}
+        <tr>
+            {% for cell in row %}
+            <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

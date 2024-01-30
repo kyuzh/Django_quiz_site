@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>Page de connexion</title>
+</head>
+<body>
+    <h1>Page de connexion</h1>
+
+    <form action="{% url 'login_page' %}" method="POST" class="form-login">
+        {% csrf_token %}
+        <label for="username">Nom d'utilisateur:</label>
+        <input type="text" id="username" name="username" required>
+
+        <br>
+
+        <label for="password">Mot de passe:</label>
+        <input type="password" id="password" name="password" required>
+
+        <br>
+
+        <input type="submit" value="Se connecter">
+    </form>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% load static %}
+
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>Import CSV - Mon application</title>
+    <script src="{% static 'import_csv.js' %}"></script>
+</head>
+<body>
+    <div class="content-choix_quiz">
+        <h1>Import CSV</h1>
+
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Autres champs du formulaire -->
+            <input type="file" name="csv_file" id="csv_file">
+            <input type="submit" value="Import">
+        </form>
+    </div>
+        {% if csv_rows %}
+            <h2>CSV Data:</h2>
+            <table id="csvTable">
+                <thead>
+                    <tr>
+                        {% for key, value in csv_rows.0.items %}
+                            <th>{{ key }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for key, value in csv_rows.0.items %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+</body>
+</html>
