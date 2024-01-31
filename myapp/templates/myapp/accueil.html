@@ -1,4 +1,5 @@
 {% load static %}
+
 <html>
 <head>
     <link rel="stylesheet" href="{% static 'style.css' %}">
@@ -6,8 +7,8 @@
 </head>
 <body>
     <div class="content-wrapper">
-    <h1>Bienvenue sur la page d'accueil</h1>
-    <p>Vous êtes maintenant connecté !</p>
+        <h1>Bienvenue sur la page d'accueil</h1>
+        <p>Vous êtes maintenant connecté !</p>
     </div>
 
     <form action="{% url 'login_page' %}" method="get">
@@ -21,6 +22,7 @@
             <input type="submit" value="Importer CSV">
         </form>
     </div>
+
 
 </body>
 </html>

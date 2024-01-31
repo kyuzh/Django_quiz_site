@@ -76,7 +76,7 @@ def create_choices_for_question(question_text,choices):
     print("Titre du quiz :", quiz.title)
     print("Description du quiz :", quiz.description)
 
-def create_serie_quiz(request):
+def create_serie_quiz_view(request):
     if request.method == 'POST':
         question_text = request.POST.get('dropdown1')
         choices = []
@@ -90,3 +90,6 @@ def create_serie_quiz(request):
         return render(request, 'myapp/accueil.html')
 
     return render(request, 'myapp/csv_display.html')
+
+def serie_de_question_view(request):
+    return render(request, 'myapp/serie_de_question.html')

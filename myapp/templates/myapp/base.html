@@ -1,0 +1,28 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="{% static 'import_csv.js' %}"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-r7shuWjbwqSWwLjLhJLxSQn2U8lEZnR1rFOJpPEa+iFdOG6TlKaP/4WpiU24d6z1" crossorigin="anonymous">
+
+    <!-- Bootstrap JS (Bundle, including Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-TMzTQBMXL2t9OEjB8MOUStNcJ8Uq5fwMhWKc33DcqcjFG0RBw8TE2Kx3PmnEM79V" crossorigin="anonymous"></script>
+
+    <title>CDX CRM</title>
+</head>
+  <body>
+    <ul>
+      <li><a href="default.asp">Home</a></li>
+      <li><a href="news.asp">News</a></li>
+      <li><a href="contact.asp">Contact</a></li>
+      <li><a href="about.asp">About</a></li>
+    </ul>
+    <div class="content-wrapper">
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
