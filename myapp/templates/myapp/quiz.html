@@ -1,17 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-  <h2>{{ question.question_text }}</h2>
-  <form action="{% url 'question_view' question.id %}" method="post">
-    {% csrf_token %}
-    {% for choice in choices %}
-      <input type="radio" name="choice" value="{{ choice.id }}">{{ choice.choice_text }}<br>
-    {% endfor %}
-    <input type="submit" value="Submit">
-</form>
-</body>
-</html>
+{% extends 'myapp/base.html' %}
+{% block content %}
+
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">This is another card with title and supporting text below. This card has some additional content to make it slightly taller overall.</p>
+    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+  </div>
+</div>
+
+
+<div class="list-group">
+    <label class="list-group-item d-flex gap-2">
+      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios1" value="" checked="">
+      <span>
+        First radio
+        <small class="d-block text-body-secondary">With support text underneath to add more detail</small>
+      </span>
+    </label>
+    <label class="list-group-item d-flex gap-2">
+      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios2" value="">
+      <span>
+        Second radio
+        <small class="d-block text-body-secondary">Some other text goes here</small>
+      </span>
+    </label>
+    <label class="list-group-item d-flex gap-2">
+      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios3" value="">
+      <span>
+        Third radio
+        <small class="d-block text-body-secondary">And we end with another snippet of text</small>
+      </span>
+    </label>
+</div>
+
+<button class="btn btn-primary rounded-pill px-3" type="button">Valider</button>
+{% endblock %}

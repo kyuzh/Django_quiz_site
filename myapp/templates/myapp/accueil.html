@@ -1,32 +1,24 @@
-{% load static %}
 
-<html>
-<head>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <title>Accueil - Mon application</title>
-</head>
-<body>
-    <div class="content-wrapper">
-        <h1>Bienvenue sur la page d'accueil</h1>
-        <p>Vous êtes maintenant connecté !</p>
-    </div>
+{% extends 'myapp/base.html' %}
+{% block content %}
+<div class="content-wrapper">
+    <h1>Bienvenue sur la page d'accueil</h1>
+    <p>Vous êtes maintenant connecté !</p>
+</div>
 
-    <form action="{% url 'login_page' %}" method="get">
+<form action="{% url 'login_page' %}" method="get">
+    {% csrf_token %}
+    <input type="submit" value="Déconnexion" class="logout-button">
+</form>
+
+<div class="csv-import-form">
+    <form action="{% url 'import_csv' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="submit" value="Déconnexion" class="logout-button">
+        <input type="submit" value="Importer CSV">
     </form>
-
-    <div class="csv-import-form">
-        <form action="{% url 'import_csv' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="submit" value="Importer CSV">
-        </form>
-    </div>
+</div>
 
 
-</body>
-</html>
-
-
+{% endblock %}
 
 

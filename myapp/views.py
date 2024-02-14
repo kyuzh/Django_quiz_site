@@ -51,11 +51,12 @@ def import_csv(request):
     # Si la méthode de requête n'est pas POST, afficher simplement la page avec le formulaire d'importation de fichier
     return render(request, 'myapp/import_csv.html')
 
-def question_view(request, question_id):
-    question = Question.objects.get(pk=question_id)
-    choices = question.choice_set.all()
-    context = {'question': question, 'choices': choices}
-    return render(request, 'myapp/quiz.html', context)
+def question_view(request):
+    # question = Question.objects.get(pk=question_id)
+    # choices = question.choice_set.all()
+    # context = {'question': question, 'choices': choices}
+    print("quiz")
+    return render(request, 'myapp/quiz.html')
 
 def answer_view(request, question_id):
     selected_choice_id = request.POST['choice']

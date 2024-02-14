@@ -25,7 +25,6 @@ function limitRows(maxRows) {
 window.onload = function() {
     var maxColumns = 5;  // Nombre maximal de colonnes à afficher
     var maxRows = 1;    // Nombre maximal de lignes à afficher
-
     limitColumns(maxColumns);
     limitRows(maxRows);
 };

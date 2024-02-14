@@ -21,7 +21,7 @@ from django.views.decorators.cache import never_cache
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', myapp_views.login_page, name='login_page'),
-    path('', never_cache(myapp_views.import_csv), name='import_csv'),
+    path('', never_cache(myapp_views.question_view), name='question_view'),
     path('import_csv/', myapp_views.import_csv, name='import_csv'),
     path('login_page/', myapp_views.login_page, name='login_page'),
     path('accueil/', myapp_views.accueil, name='accueil'),
