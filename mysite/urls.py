@@ -15,19 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from myapp import views as myapp_views
+from myapp.views import question_view, api_questions,import_csv, login_page, accueil, create_serie_quiz_view,\
+serie_de_question_view
 from django.views.decorators.cache import never_cache
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', myapp_views.login_page, name='login_page'),
-    path('', never_cache(myapp_views.question_view), name='question_view'),
-    path('import_csv/', myapp_views.import_csv, name='import_csv'),
-    path('login_page/', myapp_views.login_page, name='login_page'),
-    path('accueil/', myapp_views.accueil, name='accueil'),
-    path('csv_diplay/', myapp_views.create_serie_quiz_view, name='create_serie_quiz'),
-    path('serie_de_question', myapp_views.serie_de_question_view, name='serie_de_question'),
-    path('question/<int:question_id>/', myapp_views.question_view, name='question_view'),
-    path('answer/<int:question_id>/', myapp_views.answer_view, name='answer_view'),
+    # path('', login_page, name='login_page'),
+    path('', never_cache(question_view), name='question_view'),
+    path('import_csv/', import_csv, name='import_csv'),
+    path('login_page/', login_page, name='login_page'),
+    path('accueil/', accueil, name='accueil'),
+    path('csv_diplay/', create_serie_quiz_view, name='create_serie_quiz'),
+    path('serie_de_question', serie_de_question_view, name='serie_de_question'),
+    path('api/questions/', api_questions, name='api_questions'),
+
 
 ]

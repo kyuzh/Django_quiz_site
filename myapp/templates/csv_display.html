@@ -1,4 +1,4 @@
-{% extends 'myapp/base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div class="content-wrapper">
@@ -7,8 +7,9 @@
         <p class="error">{{ error_message }}</p>
     {% endif %}
 
-    <form action="{% url 'create_serie_quiz' %}" method="post"enctype="multipart/form-data">
+    <form action="{% url 'create_serie_quiz' %}" method="post" enctype="multipart/form-data">
          {% csrf_token %}
+        <input type="hidden" name="csv_file_name" value="{{ csv_file_name }}">
         {% for i in "1234" %}
         <!-- Dropdown menu {{ i }} -->
         {% if i == "1" %}
@@ -21,7 +22,7 @@
            <label>Explication :</label>
         {% endif %}
 
-        <select name="dropdown{{ i }}" id="dropdown{{ i }}">
+        <select name="dropdown{{ i }}" id="dropdown{{ i }}" {% if forloop.counter == 2 %}multiple{% endif %}>
             {% for row in csv_rows %}
                 {% if forloop.first %}
                     {% for cell in row %}
@@ -32,6 +33,7 @@
             <option value="Allother">Allother</option>
             <option value="None">None</option>
         </select>
+
         {% endfor %}
         <input type="submit" value="Valide">
     </form>

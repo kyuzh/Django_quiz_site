@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Quiz</h5>
+            <div id="question-index"></div>
+            <div id="question" class="card-text"></div>
+        </div>
+    </div>
+
+    <div id="propositions" class="list-group mt-3">
+        <!-- Les propositions seront insérées ici par JavaScript -->
+    </div>
+
+    <div class="mt-3">
+        <input type="number" id="question-number-input" placeholder="Numéro de la question" class="form-control mb-2">
+        <button id="go-to-question" class="btn btn-info mb-2">Aller à la question</button>
+        <button id="show-answer" class="btn btn-warning mb-2">Afficher la réponse</button>
+        <div id="answer" class="alert alert-success mt-2" style="display:none;"></div>
+        <div id="explanation" class="alert alert-info mt-2" style="display:none;"></div>
+        <button onclick="previousQuestion()" class="btn btn-secondary">Précédent</button>
+        <button onclick="nextQuestion()" class="btn btn-primary">Suivant</button>
+    </div>
+</div>
+
+<script>
+    var data = JSON.parse('{{ data|escapejs }}');
+    console.log('Données JSON :', data);
+
+    window.quizData = {
+        questions: data,
+        currentQuestionIndex: {{ current_question_index }}
+    };
+</script>
+{% endblock %}
