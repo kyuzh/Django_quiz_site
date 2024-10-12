@@ -1,28 +1,26 @@
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-{% load static %}
+{% block title %}Login Page{% endblock %}
 
-<html>
-<head>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <title>Page de connexion</title>
-</head>
-<body>
-    <h1>Page de connexion</h1>
+{% block content %}
+  <div class="d-flex justify-content-center align-items-center vh-100"> <!-- Center vertically and horizontally -->
+    <div class="col-md-4"> <!-- Limit the form width to 4 columns on medium and larger screens -->
+      <h1 class="text-center mb-4">Login Page</h1>
 
-    <form action="{% url 'login_page' %}" method="POST" class="form-login">
-        {% csrf_token %}
-        <label for="username">Nom d'utilisateur:</label>
-        <input type="text" id="username" name="username" required>
+      <form action="{% url 'login_page' %}" method="POST" class="form-login">
+          {% csrf_token %}
+          <div class="mb-3">
+              <label for="username" class="form-label">Username or Email Address</label>
+              <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Submit</button> <!-- w-100 for full-width button -->
+      </form>
 
-        <br>
+    </div>
+  </div>
+{% endblock %}
 
-        <label for="password">Mot de passe:</label>
-        <input type="password" id="password" name="password" required>
-
-        <br>
-
-        <input type="submit" value="Se connecter">
-    </form>
-</body>
-</html>

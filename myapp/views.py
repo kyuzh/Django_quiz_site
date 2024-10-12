@@ -10,9 +10,12 @@ from django.db import transaction
 from django.conf import settings
 from django.db import connection
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 from .models import Quiz
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import check_password
 import pandas as pd
 import json
 import sqlite3
@@ -24,7 +27,11 @@ def login_page(request):
         # Vérifier les identifiants de connexion
         username = request.POST.get('username')
         password = request.POST.get('password')
-        if username == '1234' and password == '1234':
+        # Check if a user with the given username exists
+        user = User.objects.get(username=username)
+
+        # Check if the password matches
+        if check_password(password, user.password):
             # Identifiants corrects, effectuer la redirection
             return redirect('accueil')  # Rediriger vers la page d'accueil
         else:
@@ -32,6 +39,29 @@ def login_page(request):
             error_message = 'Nom d\'utilisateur ou mot de passe incorrect.'
             return render(request, 'login_page.html', {'error_message': error_message})
     return render(request, 'login_page.html')
+def signup_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+
+        # Check if the passwords match
+        if password1 != password2:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'signup.html')  # Render the signup template again
+
+        # Create the user
+        try:
+            user = User.objects.create_user(username=username, email=email, password=password1)
+            user.save()
+            messages.success(request, "Registration successful! You can now log in.")
+            return redirect('login_page')  # Redirect to the login page
+        except Exception as e:
+            messages.error(request, str(e))  # Handle exceptions (e.g., username already taken)
+            return render(request, 'signup.html')
+
+    return render(request, 'signup.html')
 
 def import_csv(request):
     if request.method == 'POST':
@@ -61,39 +91,103 @@ def import_csv(request):
     return render(request, 'import_csv.html')
 
 
-def question_view(request):
-    # Envoyer les données au template
-    return render(request, 'quiz.html', {'current_question_index': 0})
+def question_view(request, table_name=None):
+    # Your logic here, possibly fetching questions based on the table_name
+    return render(request, 'quiz.html', {'current_question_index': 0, 'table_name': table_name})
 
-def api_questions(request):
-    # Se connecter à la base de données SQLite
+
+
+def api_questions(request, table_name=None):
+    # Connect to the SQLite database
     conn = sqlite3.connect('db.sqlite3')
 
-    # Écrire une requête SQL
-    query = "SELECT * FROM examen_topic_google_data_engineer___工作表1;"
+    # If table_name is not provided, fetch the first table name from SERIE_QUIZ
+    if table_name is None:
+        cursor = conn.cursor()
+        cursor.execute("SELECT table_name FROM SERIE_QUIZ LIMIT 1;")
+        first_table = cursor.fetchone()
+        if first_table:
+            table_name = first_table[0]
+        else:
+            return JsonResponse({'error': 'No tables found.'}, status=404)
 
-    # Lire les données de la base de données SQLite dans un DataFrame Pandas
-    df = pd.read_sql_query(query, conn)
+    try:
+        # Write a query to select all data from the specified table
+        query = f"SELECT * FROM {table_name};"
+
+        # Read the data into a Pandas DataFrame
+        df = pd.read_sql_query(query, conn)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)  # Return error if the query fails
+    finally:
+        # Ensure the connection is closed
+        conn.close()
 
     def replace_nan_in_json(json_str):
-        # Remplacer 'NaN' sans guillemets par '"NaN"'
         return json_str.replace('NaN', '"NaN"')
 
-    # Appliquer la fonction à la colonne 'propositions'
+    # Apply the function to the 'propositions' column
     df['propositions'] = df['propositions'].apply(replace_nan_in_json)
-
     df['propositions'] = df['propositions'].apply(lambda x: f'[{x}]')
-    # Convertir le DataFrame en JSON
+
+    # Convert the DataFrame to JSON
     json_data = df.to_json(orient='records')
 
-    # Fermer la connexion
-    conn.close()
-
     return JsonResponse(json_data, safe=False)
+
 def serie_de_question_view(request):
+    # Connect to the SQLite database
+    conn = sqlite3.connect('db.sqlite3')
 
-    return render(request, 'serie_de_question.html')
+    try:
+        # Create a cursor object
+        cursor = conn.cursor()
 
+        # Write a query to list all tables in the SERIE_QUIZ table
+        query = "SELECT table_name FROM SERIE_QUIZ;"
+
+        # Execute the query
+        cursor.execute(query)
+
+        # Fetch all results (list of tables)
+        tables = cursor.fetchall()
+
+        # Extract table names from tuples
+        table_names = [table for table in tables]
+
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        table_names = []  # Default to an empty list on error
+
+    finally:
+        # Close the connection
+        conn.close()
+
+    # Pass the list of table names to the template
+    return render(request, 'serie_de_question.html', {'tables': table_names})
+
+def view_table(request, table_name):
+    # Connect to the SQLite database
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+
+    # Query to select all data from the specified table
+    query = f"SELECT * FROM {table_name};"  # Using f-string for safe formatting
+
+    try:
+        cursor.execute(query)
+        table_data = cursor.fetchall()  # Fetch all rows
+        columns = [description[0] for description in cursor.description]  # Get column names
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        table_data = []  # Default to an empty list on error
+        columns = []
+
+    finally:
+        conn.close()
+
+    # Pass the columns and table data to the template
+    return render(request, 'view_table.html', {'columns': columns, 'table_data': table_data})
 
 @csrf_protect
 def create_serie_quiz_view(request):
@@ -132,6 +226,7 @@ def create_serie_quiz_view(request):
                        """, [row.get(question, question), propositions_json,
                              row.get(correct_answer, None), row.get(explanation, None)])
 
+
         return redirect(reverse('accueil'))  # Redirect to a success page
 
     # If not a POST request, render the form template
@@ -139,19 +234,19 @@ def create_serie_quiz_view(request):
 
 
 def create_table_from_csv(csv_file_name):
+    # Connect to the SQLite database
+    connection = sqlite3.connect('db.sqlite3')
+
     # Sanitize file name for table creation
     table_name = re.sub(r'\W|^(?=\d)', '_', csv_file_name.split('.')[0])
 
-    # Drop table if it exists
-    with connection.cursor() as cursor:
-        cursor.execute(f"""
-            DROP TABLE IF EXISTS {table_name}
-        """)
+    try:
+        # Create a cursor object
+        cursor = connection.cursor()
 
-    # Create table dynamically
-    with connection.cursor() as cursor:
+        # Create the table dynamically based on CSV file
         cursor.execute(f"""
-            CREATE TABLE {table_name} (
+            CREATE TABLE IF NOT EXISTS {table_name} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 question TEXT,
                 propositions TEXT,
@@ -159,3 +254,29 @@ def create_table_from_csv(csv_file_name):
                 explanation TEXT
             )
         """)
+
+        # Create the SERIE_QUIZ table if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS SERIE_QUIZ (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                table_name TEXT NOT NULL
+            );
+        """)
+
+        # Insert the new table name into the SERIE_QUIZ table
+        cursor.execute("""
+            INSERT INTO SERIE_QUIZ (table_name)
+            VALUES (?);
+        """, (table_name,))  # Using a tuple for parameter substitution
+
+        # Commit changes
+        connection.commit()
+
+    except Exception as e:
+        # Handle exceptions (optional)
+        print(f"An error occurred: {e}")
+
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        connection.close()

@@ -3,7 +3,18 @@
 // Fonction pour limiter le nombre de colonnes affichées
 function limitColumns(maxColumns) {
     var table = document.getElementById("csvTable");
+
+    if (!table) {
+        return; // Exit the function if the table doesn't exist
+    }
+
     var rows = table.getElementsByTagName("tr");
+    // Check if there are any rows
+    if (rows.length === 0) {
+        console.warn("No rows found in the table.");
+        return; // Exit the function if there are no rows
+    }
+
     for (var i = 0; i < rows.length; i++) {
         var cells = rows[i].getElementsByTagName("td");
         for (var j = maxColumns; j < cells.length; j++) {
@@ -15,7 +26,18 @@ function limitColumns(maxColumns) {
 // Fonction pour limiter le nombre de lignes affichées
 function limitRows(maxRows) {
     var table = document.getElementById("csvTable");
+        // Check if the table exists
+    if (!table) {
+        return; // Exit the function if the table doesn't exist
+    }
+
     var rows = table.getElementsByTagName("tr");
+        // Check if there are any rows
+    if (rows.length === 0) {
+        console.warn("No rows found in the table.");
+        return; // Exit the function if there are no rows
+    }
+
     for (var i = maxRows; i < rows.length; i++) {
         rows[i].style.display = "none";
     }

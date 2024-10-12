@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from myapp.views import question_view, api_questions,import_csv, login_page, accueil, create_serie_quiz_view,\
-serie_de_question_view
+serie_de_question_view, signup_view,view_table
 from django.views.decorators.cache import never_cache
 
 
@@ -24,12 +24,17 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', login_page, name='login_page'),
     path('', never_cache(question_view), name='question_view'),
+    path('question/<str:table_name>/', never_cache(question_view), name='question_view'),
     path('import_csv/', import_csv, name='import_csv'),
     path('login_page/', login_page, name='login_page'),
+    path('signup/', signup_view, name='signup'),
     path('accueil/', accueil, name='accueil'),
     path('csv_diplay/', create_serie_quiz_view, name='create_serie_quiz'),
-    path('serie_de_question', serie_de_question_view, name='serie_de_question'),
-    path('api/questions/', api_questions, name='api_questions'),
+    path('serie_de_question/', serie_de_question_view, name='serie_de_question'),
+    path('api/questions/', api_questions, name='api_questions'),  # Endpoint without table_name
+    path('api/questions/<str:table_name>/', api_questions, name='api_questions'),
+    path('view_table/<str:table_name>/', view_table, name='view_table'),
+
 
 
 ]

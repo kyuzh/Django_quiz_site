@@ -104,15 +104,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('show-answer').addEventListener('click', () => {
-        if (window.quizData && window.quizData.questions) {
-            document.getElementById('answer').style.display = 'block';
-            document.getElementById('explanation').style.display = 'block';
+document.getElementById('show-answer').addEventListener('click', () => {
+    const explanationElement = document.getElementById('explanation');
+    const explanationText = explanationElement.textContent;
 
-        } else {
-            console.error('Données de quiz non disponibles pour afficher la réponse');
-        }
-    });
+    // Vérification si les données du quiz existent
+    if (window.quizData && window.quizData.questions) {
+        document.getElementById('answer').style.display = 'block';
+        explanationElement.style.display = explanationText !== "" ? 'block' : 'none'; // Afficher l'explication si elle existe
+    } else {
+        alert('Les données du quiz ne sont pas disponibles.');
+        return;
+    }
+
+    const currentQuestionIndex = window.quizData.currentQuestionIndex;
+
+    // Récupérer la réponse correcte pour la question actuelle
+    const correctAnswer = document.getElementById('answer').textContent;
+
+    // Récupérer la réponse sélectionnée par l'utilisateur
+    const selectedOption = document.querySelector('input[name="proposition"]:checked');
+
+    // Vérifier si l'utilisateur a sélectionné une option
+    if (!selectedOption) {
+        alert('Veuillez sélectionner une option avant de voir la réponse.');
+        return;
+    }
+
+    const selectedAnswer = selectedOption.value;
+    const selectedText = selectedOption.parentElement.querySelector('span').textContent;
+
+
+
+
+    // Comparer la réponse sélectionnée avec la réponse correcte
+    const label = selectedOption.parentElement;
+    if (selectedText === correctAnswer) {
+        selectedOption.parentElement.querySelector('span').style.color = 'green'; // Mettre en vert si c'est correct
+
+    } else {
+        selectedOption.parentElement.querySelector('span').style.color = 'red'; // Mettre en rouge si c'est incorrect
+
+    }
+});
+
 
 
 });

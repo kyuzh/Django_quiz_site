@@ -2,21 +2,22 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="content-wrapper">
-    <h1>Bienvenue sur la page d'accueil</h1>
-    <p>Vous êtes maintenant connecté !</p>
+    <h1>Welcome to the Homepage</h1>
+    <p>You are now logged in!</p>
 </div>
 
 <form action="{% url 'login_page' %}" method="get">
     {% csrf_token %}
-    <input type="submit" value="Déconnexion" class="logout-button">
+    <input type="submit" value="Logout" class="logout-button">
 </form>
 
 <div class="csv-import-form">
     <form action="{% url 'import_csv' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="submit" value="Importer CSV">
+        <input type="submit" value="Import CSV">
     </form>
 </div>
+
 
 
 {% endblock %}
