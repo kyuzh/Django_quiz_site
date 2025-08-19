@@ -18,6 +18,15 @@
                     <button type="submit" class="btn btn-info" title="Fetch questions from {{ table.0 }}">
                         <i class="bi bi-question-circle"></i> Fetch Questions
                     </button>
+
+
+                </form>
+
+                 <form action="{% url 'delete_serie_question' table.0 %}" method="post" class="delete-serie-form d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
                 </form>
 
                 </div>

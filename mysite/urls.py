@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from myapp.views import question_view, api_questions,import_csv, login_page, accueil, create_serie_quiz_view,\
-serie_de_question_view, signup_view,view_table
+serie_de_question_view, signup_view,view_table, delete_serie_question
 from django.views.decorators.cache import never_cache
 
 
@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/questions/', api_questions, name='api_questions'),  # Endpoint without table_name
     path('api/questions/<str:table_name>/', api_questions, name='api_questions'),
     path('view_table/<str:table_name>/', view_table, name='view_table'),
+    path('delete/<str:table_name>/', delete_serie_question, name='delete_serie_question'),
 
 
 

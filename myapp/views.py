@@ -19,6 +19,9 @@ from django.contrib.auth.hashers import check_password
 import pandas as pd
 import json
 import sqlite3
+
+from django.views.decorators.http import require_POST
+
 def accueil(request):
     return render(request, 'accueil.html')
 
@@ -92,6 +95,9 @@ def import_csv(request):
 
 
 def question_view(request, table_name=None):
+    print(table_name)
+    print(pd.__version__)
+
     # Your logic here, possibly fetching questions based on the table_name
     return render(request, 'quiz.html', {'current_question_index': 0, 'table_name': table_name})
 
@@ -100,7 +106,7 @@ def question_view(request, table_name=None):
 def api_questions(request, table_name=None):
     # Connect to the SQLite database
     conn = sqlite3.connect('db.sqlite3')
-
+    print(table_name)
     # If table_name is not provided, fetch the first table name from SERIE_QUIZ
     if table_name is None:
         cursor = conn.cursor()
@@ -237,16 +243,18 @@ def create_table_from_csv(csv_file_name):
     # Connect to the SQLite database
     connection = sqlite3.connect('db.sqlite3')
 
-    # Sanitize file name for table creation
+    # Sanitize file name for table creation (convert invalid characters to '_')
     table_name = re.sub(r'\W|^(?=\d)', '_', csv_file_name.split('.')[0])
 
     try:
-        # Create a cursor object
         cursor = connection.cursor()
 
-        # Create the table dynamically based on CSV file
+        # Drop the table if it exists (SQLite does not support CREATE OR REPLACE)
+        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+
+        # Create the new table
         cursor.execute(f"""
-            CREATE TABLE IF NOT EXISTS {table_name} (
+            CREATE TABLE {table_name} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 question TEXT,
                 propositions TEXT,
@@ -259,24 +267,45 @@ def create_table_from_csv(csv_file_name):
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS SERIE_QUIZ (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                table_name TEXT NOT NULL
-            );
+                table_name TEXT NOT NULL UNIQUE
+            )
         """)
 
-        # Insert the new table name into the SERIE_QUIZ table
+        # Insert the new table name into SERIE_QUIZ if not already present
         cursor.execute("""
-            INSERT INTO SERIE_QUIZ (table_name)
-            VALUES (?);
-        """, (table_name,))  # Using a tuple for parameter substitution
+            INSERT OR IGNORE INTO SERIE_QUIZ (table_name)
+            VALUES (?)
+        """, (table_name,))
 
         # Commit changes
         connection.commit()
 
     except Exception as e:
-        # Handle exceptions (optional)
         print(f"An error occurred: {e}")
 
     finally:
-        # Close the cursor and connection
         cursor.close()
         connection.close()
+@require_POST
+def delete_serie_question(request, table_name):
+    conn = sqlite3.connect('db.sqlite3')
+    try:
+        cursor = conn.cursor()
+
+        # Supprimer la série de la table SERIE_QUIZ
+        cursor.execute("DELETE FROM SERIE_QUIZ WHERE table_name = ?", (table_name,))
+        conn.commit()
+
+        # Si la requête vient d'AJAX, renvoyer JSON
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"success": True})
+
+    except sqlite3.Error as e:
+        print(f"Erreur SQLite: {e}")
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"success": False, "error": str(e)})
+    finally:
+        conn.close()
+
+    # Redirection si appel normal
+    return render(request,'serie_de_question.html')

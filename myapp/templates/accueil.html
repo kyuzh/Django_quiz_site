@@ -17,7 +17,10 @@
         <input type="submit" value="Import CSV">
     </form>
 </div>
-
+<form action="{% url 'serie_de_question' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Series of Questions">
+</form>
 
 
 {% endblock %}

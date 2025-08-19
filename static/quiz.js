@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    fetch('/api/questions/')
+    const tableElement = document.getElementById('table');
+    const tableName = tableElement.dataset.table;
+
+    fetch(`/api/questions/${tableName}`)
         .then(response => {
             console.log('Response status:', response.status);
             return response.json();
@@ -23,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('question').innerText = questionData[index].question;
 
                 // Afficher l'index de la question
-                document.getElementById('question-index').innerText = `Question ${index + 1} sur ${window.quizData.questions.length}`;
+                const maxId = Math.max(...questionData.map(q => q.id));
+                console.log(maxId);
+                document.getElementById('question-index').innerText = `Question ${index + 1} sur ${maxId}`;
                 document.getElementById('propositions').innerText = questionData[index].propositions;
 
                 document.getElementById('answer').style.display = 'none';
@@ -67,11 +72,44 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Données de quiz non définies ou questions manquantes');
         }
     }
+    // --- Remplir la liste des numéros de questions ---
+    function buildQuestionIndexList() {
+        const listContainer = document.getElementById('question-index-list');
+        listContainer.innerHTML = '';
+
+        window.quizData.questions.forEach((q, idx) => {
+            const li = document.createElement('li');
+            li.className = "list-group-item list-group-item-action";
+            li.textContent = idx + 1;
+            li.style.cursor = "pointer";
+
+            li.addEventListener('click', () => {
+                window.quizData.currentQuestionIndex = idx;
+                showQuestion(idx);
+            });
+
+            listContainer.appendChild(li);
+        });
+         highlightCurrentIndex(); // Marquer la question actuelle au chargement
+    }
+    function highlightCurrentIndex() {
+    const listItems = document.querySelectorAll('#question-index-list li');
+    listItems.forEach((item, index) => {
+        if (index === window.quizData.currentQuestionIndex) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+    }
+
+
 
     window.nextQuestion = function() {
         if (window.quizData && window.quizData.questions) {
             if (window.quizData.currentQuestionIndex < window.quizData.questions.length - 1) {
                 window.quizData.currentQuestionIndex++;
+
                 showQuestion(window.quizData.currentQuestionIndex);
             } else {
                 console.warn('Dernière question atteinte');
@@ -85,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.quizData && window.quizData.questions) {
             if (window.quizData.currentQuestionIndex > 0) {
                 window.quizData.currentQuestionIndex--;
+
                 showQuestion(window.quizData.currentQuestionIndex);
             } else {
                 console.warn('Première question atteinte');
@@ -98,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const questionNumber = parseInt(document.getElementById('question-number-input').value, 10);
         if (!isNaN(questionNumber) && questionNumber > 0 && questionNumber <= window.quizData.questions.length) {
             window.quizData.currentQuestionIndex = questionNumber - 1;
+
             showQuestion(window.quizData.currentQuestionIndex);
         } else {
             alert('Numéro de question invalide');
@@ -133,13 +173,13 @@ document.getElementById('show-answer').addEventListener('click', () => {
 
     const selectedAnswer = selectedOption.value;
     const selectedText = selectedOption.parentElement.querySelector('span').textContent;
-
-
-
+    const selectedNumber = selectedAnswer.replace('option', ''); // "3"
 
     // Comparer la réponse sélectionnée avec la réponse correcte
     const label = selectedOption.parentElement;
-    if (selectedText === correctAnswer) {
+    console.log('selectedAnswer:', selectedAnswer);
+    console.log('correctAnswer:', correctAnswer);
+    if (selectedAnswer === correctAnswer || selectedText === correctAnswer  || selectedNumber === correctAnswer) {
         selectedOption.parentElement.querySelector('span').style.color = 'green'; // Mettre en vert si c'est correct
 
     } else {
@@ -148,6 +188,22 @@ document.getElementById('show-answer').addEventListener('click', () => {
     }
 });
 
-
-
 });
+
+(document).ready(function(){
+    $(".delete-serie-form").submit(function(){
+        return confirm("Supprimer cette série ?");
+    });
+});
+
+// Récupérer les données depuis le div
+var quizDiv = document.getElementById('quiz-data');
+var data = JSON.parse(quizDiv.getAttribute('data-questions'));
+var currentQuestionIndex = parseInt(quizDiv.getAttribute('data-current-index'), 10);
+
+console.log('Données JSON :', data);
+
+window.quizData = {
+    questions: data,
+    currentQuestionIndex: currentQuestionIndex
+};

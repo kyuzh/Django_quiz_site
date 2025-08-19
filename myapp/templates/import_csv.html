@@ -15,10 +15,7 @@
 
     </form>
 
-    <form action="{% url 'serie_de_question' %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="Series of Questions">
-    </form>
+
 </div>
 
 {% if csv_rows %}

@@ -1,14 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
+ <!--
+<div class="card flex-shrink-1" style="width: 150px;">
+    <div class="card-body">
+        <h6>Index Questions</h6>
+        <ul id="question-index-list" class="list-group">
+
+        </ul>
+    </div>
+</div>
+ -->
 
 <div class="container mt-4">
+    <h1 id="table" data-table="{{ table_name }}">Table name: {{ table_name }}</h1>
     <div class="card">
         <div class="card-body">
+
             <h5 class="card-title">Quiz</h5>
+
             <div id="question-index"></div>
             <div id="question" class="card-text"></div>
         </div>
     </div>
+
 
     <div id="propositions" class="list-group mt-3">
         <!-- Les propositions seront insérées ici par JavaScript -->
@@ -23,7 +37,10 @@
         <button onclick="previousQuestion()" class="btn btn-secondary">Précédent</button>
         <button onclick="nextQuestion()" class="btn btn-primary">Suivant</button>
     </div>
-</div>
+
+
+    </div>
+
 
 <script>
     var data = JSON.parse('{{ data|escapejs }}');
