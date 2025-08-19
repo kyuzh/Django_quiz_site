@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetch(`/api/questions/${tableName}`)
         .then(response => {
-            console.log('Response status:', response.status);
+            //console.log('Response status:', response.status);
             return response.json();
         })
         .then(data => {
-            console.log('Données reçues :', data);
+            //console.log('Données reçues :', data);
 
             window.quizData = {
                 questions: data,
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Afficher l'index de la question
                 const maxId = Math.max(...questionData.map(q => q.id));
-                console.log(maxId);
+                //console.log(maxId);
                 document.getElementById('question-index').innerText = `Question ${index + 1} sur ${maxId}`;
                 document.getElementById('propositions').innerText = questionData[index].propositions;
 
@@ -41,18 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     // Les propositions devraient déjà être un JSON string dans le questionData
                     propositions = JSON.parse(questionData[index].propositions || '{}');
-                    console.log('Afficher les propositions :',  propositions[0]);
+                    //console.log('Afficher les propositions :',  propositions[0]);
 
                     // Calculer la longueur des propositions
                     const numberOfPropositions = Object.keys(propositions[0]).length;
-                    console.log('Nombre de propositions :', numberOfPropositions);
+                    //console.log('Nombre de propositions :', numberOfPropositions);
 
                     const propositionsContainer = document.getElementById('propositions');
                     propositionsContainer.innerHTML = '';
 
                     // Ajout des propositions à l'élément HTML
                     for (const key in propositions[0]) {
-                        console.log('Afficher les key :',  propositions[0][key]);
+                        //console.log('Afficher les key :',  propositions[0][key]);
                         if (propositions[0].hasOwnProperty(key) && propositions[0][key] !== null && propositions[0][key] !== 'NaN') {
                             propositionsContainer.innerHTML += `
                                 <label class="list-group-item d-flex gap-2">
@@ -177,8 +177,8 @@ document.getElementById('show-answer').addEventListener('click', () => {
 
     // Comparer la réponse sélectionnée avec la réponse correcte
     const label = selectedOption.parentElement;
-    console.log('selectedAnswer:', selectedAnswer);
-    console.log('correctAnswer:', correctAnswer);
+    //console.log('selectedAnswer:', selectedAnswer);
+    //console.log('correctAnswer:', correctAnswer);
     if (selectedAnswer === correctAnswer || selectedText === correctAnswer  || selectedNumber === correctAnswer) {
         selectedOption.parentElement.querySelector('span').style.color = 'green'; // Mettre en vert si c'est correct
 

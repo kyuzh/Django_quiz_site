@@ -95,9 +95,18 @@ def import_csv(request):
 
 
 def question_view(request, table_name=None):
-    print(table_name)
-    print(pd.__version__)
 
+
+    # If table_name is not provided, fetch the first table name from SERIE_QUIZ
+    if table_name is None:
+        conn = sqlite3.connect('db.sqlite3')
+        cursor = conn.cursor()
+        cursor.execute("SELECT table_name FROM SERIE_QUIZ LIMIT 1;")
+        first_table = cursor.fetchone()
+        if first_table:
+            table_name = first_table[0]
+        else:
+            return JsonResponse({'error': 'No tables found.'}, status=404)
     # Your logic here, possibly fetching questions based on the table_name
     return render(request, 'quiz.html', {'current_question_index': 0, 'table_name': table_name})
 
