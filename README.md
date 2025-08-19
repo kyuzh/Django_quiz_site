@@ -22,11 +22,6 @@ Suivez ces étapes pour cloner le dépôt, créer un environnement virtuel, inst
 
 ---
 
-# Guide d'installation et de lancement - Django\_quiz\_site
-
-Suivez ces étapes pour cloner le dépôt, créer un environnement virtuel, installer les dépendances et démarrer le serveur Django.
-
----
 
 ## 1️⃣ Cloner le dépôt
 
